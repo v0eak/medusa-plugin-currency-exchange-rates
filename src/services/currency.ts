@@ -20,6 +20,10 @@ class CurrencyService extends MedusaCurrencyService {
         this.currencyRepository_ = container.currencyRepository
     }
 
+    // TODO: modify retrieve to combine the primary and secondary exchangerate into single
+    // instead of having a field for primary and secondary, do the calculation and
+    // return a single exchange_rates
+
     async createCurrencyRates(
         code: string,
         symbols: string[]
