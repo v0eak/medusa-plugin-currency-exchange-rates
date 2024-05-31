@@ -53,7 +53,7 @@ class CurrencyService extends MedusaCurrencyService {
 
         return await this.update(code, {
             rates: responseData.rates,
-            rate_timestamp: responseData.timestamp
+            rates_timestamp: responseData.timestamp
         })
     }
 
@@ -74,9 +74,9 @@ class CurrencyService extends MedusaCurrencyService {
                 }
             }
 
-            if (typeof data.rates !== "undefined" && typeof data.rate_timestamp !== "undefined") {
+            if (typeof data.rates !== "undefined" && typeof data.rates_timestamp !== "undefined") {
                 currency.rates = data.rates
-                currency.rates_timestamp = new Date(data.rate_timestamp * 1000)
+                currency.rates_timestamp = new Date(data.rates_timestamp * 1000)
             }
     
             const currencyRepo = manager.withRepository(

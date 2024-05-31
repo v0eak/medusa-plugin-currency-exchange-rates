@@ -8,7 +8,7 @@
   </a>
 </p>
 <h1 align="center">
-  Medusa Feature Displays
+  Medusa Plugin Currency Exchange Rates
 </h1>
 
 <p align="center">A plugin that fetches the current exchange rates for every store currency every 2 hours.</p>

@@ -2,5 +2,5 @@ import { UpdateCurrencyInput as MedusaUpdateCurrencyInput } from "@medusajs/medu
 
 export interface UpdateCurrencyInput extends MedusaUpdateCurrencyInput {
     rates?: Record<string, number> | null;
-    rate_timestamp?: number | null;
+    rates_timestamp?: number | null;
 }

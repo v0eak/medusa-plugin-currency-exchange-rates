@@ -2,15 +2,19 @@
   "name": "medusa-plugin-currency-exchange-rates",
   "version": "0.1.0",
   "description": "A plugin that fetches Exchange Rates for each currency every 2 hours.",
-  "author": "Medusa (https://medusajs.com)",
+  "author": "v0eak",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/v0eak/medusa-plugin-currency-exchange-rates"
+  },
   "keywords": [
-    "sqlite",
-    "postgres",
-    "typescript",
-    "ecommerce",
-    "headless",
-    "medusa"
+    "medusa-plugin",
+    "medusa-plugin-admin",
+    "medusa-product-currency-exchange-rates",
+    "currency",
+    "exchange-rates",
+    "rates"
   ],
   "scripts": {
     "clean": "cross-env ./node_modules/.bin/rimraf dist",
