@@ -4,9 +4,7 @@ import {
     type ScheduledJobArgs,
     Store
 } from "@medusajs/medusa"
-import axios, { AxiosResponse } from "axios"
 import CurrencyService from "../services/currency"
-import { apiResponseType } from "../types/api"
 
 export default async function handler({
     container,
@@ -18,35 +16,18 @@ export default async function handler({
         relations: ["currencies", "default_currency"]
     })
     const currencyService: CurrencyService = container.resolve("currencyService")
+    
+    store.currencies.map(async (currency) => {
+        const symbols = store.currencies
+            .filter(c => c.code !== currency.code)
+            .map(c => c.code);
 
-    const promises = store.currencies.map(currency => {
-        const otherCurrencies = store.currencies.filter(c => c.code !== currency.code);
-        const symbols = otherCurrencies.map(c => c.code).join(',');
-
-        return axios.get(`http://api.exchangeratesapi.io/v1/latest`, {
-            params: {
-                access_key: pluginOptions.apiKey,
-                base: currency.code,
-                symbols: symbols
-            }
-        })
+        await currencyService.createCurrencyRates(currency.code, symbols)
     });
-
-    const responses = await Promise.allSettled(promises);
-    const responseData: apiResponseType[] = responses
-        .filter(response => response.status === 'fulfilled') // remove rejected promises
-        .map(response => (response as PromiseFulfilledResult<AxiosResponse>).value.data);
-
-    for (const apiData of responseData) {
-        await currencyService.update(apiData.base, {
-            rates: apiData.rates,
-            rate_timestamp: apiData.timestamp
-        });
-    }
 }
   
 export const config: ScheduledJobConfig = {
     name: "update-currency-exchange-rates",
-    schedule: "* */2 * * *",
+    schedule: "0 */2 * * *",
     data: {},
 }

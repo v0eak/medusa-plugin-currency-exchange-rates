@@ -8,63 +8,60 @@
   </a>
 </p>
 <h1 align="center">
-  Medusa
+  Medusa Feature Displays
 </h1>
 
-<h4 align="center">
-  <a href="https://docs.medusajs.com">Documentation</a> |
-  <a href="https://www.medusajs.com">Website</a>
-</h4>
-
-<p align="center">
-  Building blocks for digital commerce
-</p>
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/master/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-    <a href="https://www.producthunt.com/posts/medusa"><img src="https://img.shields.io/badge/Product%20Hunt-%231%20Product%20of%20the%20Day-%23DA552E" alt="Product Hunt"></a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+<p align="center">A plugin that fetches the current exchange rates for every store currency every 2 hours.</p>
 
 ## Compatibility
+This plugin is compatible with versions >1.20.6 of `@medusajs/medusa`
 
-This starter is compatible with versions >= 1.8.0 of `@medusajs/medusa`. 
+Probably also works with earlier versions 1.20 and 1.19 versions
+
+## Requirements
+This plugin requires you have the Medusajs' Admin.
+[@medusajs/admin](https://medusajs.com/admin/)
 
 ## Getting Started
 
-Visit the [Quickstart Guide](https://docs.medusajs.com/create-medusa-app) to set up a server.
+Installation
+```bash
+  yarn add medusa-plugin-currency-exchange-rates
+  OR
+  npm install medusa-plugin-currency-exchange-rates
+```
 
-Visit the [Docs](https://docs.medusajs.com/development/backend/prepare-environment) to learn more about our system requirements.
+Add to ```.env``` and Replace ```<YOUR_API_KEY>``` with your API Key that you can obtain from [exchangeratesapi.io](https://exchangeratesapi.io/)
+```bash
+  EXCHANGERATESAPI_API_KEY=<YOUR_API_KEY>
+```
 
-## What is Medusa
+Add to ```medusa-config.js```
+```bash
+  ///...other plugins
+  {
+    resolve: `medusa-plugin-currency-exchange-rates`,
+    options: {
+      enableUI: true,
+      apiKey: process.env.EXCHANGERATESAPI_API_KEY
+    },
+  },
+```
 
-Medusa is a set of commerce modules and tools that allow you to build rich, reliable, and performant commerce applications without reinventing core commerce logic. The modules can be customized and used to build advanced ecommerce stores, marketplaces, or any product that needs foundational commerce primitives. All modules are open-source and freely available on npm.
+Run Database Migrations
+```bash
+  npx medusa migrations run
+```
 
-Learn more about [Medusa’s architecture](https://docs.medusajs.com/development/fundamentals/architecture-overview) and [commerce modules](https://docs.medusajs.com/modules/overview) in the Docs.
+Start the server
+```bash
+  medusa develop
+```
 
-## Roadmap, Upgrades & Plugins
+## Roadmap
+Once the ```medusajs v2.0``` is released and stable, I will migrate this plugin to the newest version. This will probably be around end of this year, worst case next year.
 
-You can view the planned, started and completed features in the [Roadmap discussion](https://github.com/medusajs/medusa/discussions/categories/roadmap).
-
-Follow the [Upgrade Guides](https://docs.medusajs.com/upgrade-guides/) to keep your Medusa project up-to-date.
-
-Check out all [available Medusa plugins](https://medusajs.com/plugins/).
-
-## Community & Contributions
-
-The community and core team are available in [GitHub Discussions](https://github.com/medusajs/medusa/discussions), where you can ask for support, discuss roadmap, and share ideas.
-
-Join our [Discord server](https://discord.com/invite/medusajs) to meet other community members.
-
-## Other channels
-
-- [GitHub Issues](https://github.com/medusajs/medusa/issues)
-- [Twitter](https://twitter.com/medusajs)
-- [LinkedIn](https://www.linkedin.com/company/medusajs)
-- [Medusa Blog](https://medusajs.com/blog/)
+## Quick Notes
+- The Rates are fetched every even 2nd hour (0:00, 2:00, 4:00, ...) 24 hours a day - so 12 times in a day.
+- I recommend you purchase the Basic Plan for 10$, as it allows you to fetch exchange rates for ~28 currencies throughout a whole month.
+- Unfortunately, the Free Tier only allows for HTTP fetch requests and limits monthly request to 250, therefore I have not implemented functionality for it. It also limits you to only be able to fetch the rates for the Euro.
