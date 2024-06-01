@@ -1,25 +1,26 @@
-import { Entity, PrimaryColumn, Column, OneToMany, PrimaryGeneratedColumn, BeforeInsert, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany, PrimaryGeneratedColumn, BeforeInsert, ManyToOne, JoinColumn, Unique } from "typeorm";
 import { BaseEntity, Currency as MedusaCurrency, generateEntityId } from "@medusajs/medusa"
 import { Currency } from "./currency";
 
 @Entity()
+@Unique(["base_currency", "secondary_currency"])
 export class CurrencyExchangeRate extends BaseEntity {
     @PrimaryGeneratedColumn()
         id: string
 
-    @ManyToOne(() => Currency, currency => currency.primary_exchange_rates)
-        @JoinColumn({ name: "primary_currency_id" })
-        primary_currency: Currency
+    @ManyToOne(() => Currency, currency => currency.code)
+        @JoinColumn({ name: "base_currency_id" })
+        base_currency: Currency
 
-    @ManyToOne(() => Currency, currency => currency.secondary_exchange_rates)
-        @JoinColumn({ name: "primary_currency_id" })
+    @ManyToOne(() => Currency, currency => currency.code)
+        @JoinColumn({ name: "secondary_currency_id" })
         secondary_currency: Currency
 
     @Column('numeric')
         exchange_rate: number;
 
-    @Column({ type: 'timestamp', nullable: true})
-        timestamp: Date | null;
+    @Column({ type: 'timestamp'})
+        timestamp: Date;
 
     @BeforeInsert()
     private beforeInsert(): void {

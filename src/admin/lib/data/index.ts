@@ -8,8 +8,8 @@ export const initializeNotify = (notifyFunction) => {
 
 export const useCreateCurrencyRates = (currencyCode: string) => {
     const { mutate: mutateCurrencyRates } = useAdminCustomPost(
-        `/currencies/${currencyCode}`,
-        ["currency"]
+        `/currency-exchange-rate/${currencyCode}`,
+        ["base_currency", "secondary_currency"]
     )
     
     const createCurrencyRates = async (symbols: string[]) => {

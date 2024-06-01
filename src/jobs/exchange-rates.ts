@@ -4,7 +4,7 @@ import {
     type ScheduledJobArgs,
     Store
 } from "@medusajs/medusa"
-import CurrencyService from "../services/currency"
+import CurrencyExchangeRateService from "../services/currency-exchange-rate"
 
 export default async function handler({
     container,
@@ -15,17 +15,26 @@ export default async function handler({
     const store: Store = await storeService.retrieve({
         relations: ["currencies", "default_currency"]
     })
-    const currencyService: CurrencyService = container.resolve("currencyService")
+    const exchangeRateService: CurrencyExchangeRateService = container.resolve("currencyExchangeRateService")
     
-    store.currencies.map(async (currency) => {
+    const promises = store.currencies.map(async (currency) => {
         const symbols = store.currencies
             .filter(c => c.code !== currency.code)
             .map(c => c.code);
 
-        await currencyService.createCurrencyRates(currency.code, symbols)
+        return await exchangeRateService.createCurrencyRates(currency.code, symbols)
     });
+
+    const results = await Promise.allSettled(promises)
+    const rejectedResults = results.filter(
+        (result): result is PromiseRejectedResult => result.status === 'rejected'
+    )
+
+    rejectedResults.forEach(result => {
+        console.error(`Failed to process currency rates: `, result.reason);
+    })
 }
-  
+
 export const config: ScheduledJobConfig = {
     name: "update-currency-exchange-rates",
     schedule: "0 */2 * * *",

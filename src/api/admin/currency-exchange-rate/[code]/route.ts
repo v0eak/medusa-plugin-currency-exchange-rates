@@ -1,17 +1,17 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
-import CurrencyService from "../../../../services/currency";
+import CurrencyExchangeRateService from "../../../../services/currency-exchange-rate";
 import { AdminCreateCurrencyRates, AdminCreateCurrencyRatesType } from "./validators";
 
 export const POST = async (
-    req: MedusaRequest,
+    req: MedusaRequest<AdminCreateCurrencyRatesType>,
     res: MedusaResponse
 ) => {
-    const currencyService: CurrencyService = req.scope.resolve("currencyService")
-    const currency_code = req.params.code
+    const exchangeRateService: CurrencyExchangeRateService = req.scope.resolve("currencyExchangeRateService")
     const body: AdminCreateCurrencyRatesType = AdminCreateCurrencyRates.parse(req.body)
+    const currency_code = req.params.code
     const { symbols } = body
 
-    const currency = await currencyService.createCurrencyRates(
+    const currency = await exchangeRateService.createCurrencyRates(
         currency_code,
         symbols
     )

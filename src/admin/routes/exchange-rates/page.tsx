@@ -1,37 +1,61 @@
 import { useEffect, useState } from "react"
-import { Currency } from "@medusajs/medusa"
+import { Currency, Store } from "@medusajs/medusa"
 import { RouteConfig, RouteProps } from "@medusajs/admin"
-import { useAdminStore } from "medusa-react"
+import { useAdminCustomQuery, useAdminStore } from "medusa-react"
 import { Container, Heading, ProgressAccordion, Badge, Button, Table } from "@medusajs/ui"
 import { CurrencyDollar } from "@medusajs/icons"
 import { initializeNotify, useCreateCurrencyRates } from "../../lib/data"
+
+const processAllCurrencyRates = async (currencies, createCurrencyRates) => {
+    const promises = currencies.map(currency => createCurrencyRates(currency.code));
+
+    const results = await Promise.allSettled(promises)
+    const rejectedResults = results.filter(
+        (result): result is PromiseRejectedResult => result.status === 'rejected'
+    )
+
+    rejectedResults.forEach(result => {
+        console.error(`Failed to process currency rates: `, result.reason);
+    })
+};
 
 const ExchangeRatepage = ({notify}: RouteProps) => {
     const {
         store,
         isLoading
     } = useAdminStore()
-    const [currencyData, setCurrencyData] = useState({ currencyCode: null, symbols: [] });
+    const [currencyIndex, setCurrencyIndex] = useState(0);
+    const [fetchInProgress, setFetchInProgress] = useState(false);
 
-    const createCurrencyRates = useCreateCurrencyRates(currencyData.currencyCode);
+    const currencyData = store.currencies[currencyIndex];
+    const createCurrencyRates = useCreateCurrencyRates(currencyData?.code);
 
-    const handleCreateCurrencyRates = (currencyCode: string) => {
+    const handleCreateCurrencyRates = async (currencyCode) => {
         const symbols = store.currencies.filter(c => c.code !== currencyCode).map(c => c.code);
-        setCurrencyData({ currencyCode, symbols });
+        try {
+            await createCurrencyRates(symbols);
+        } catch (error) {
+            console.error(`Failed to create currency rates for ${currencyCode}:`, error);
+            // Handle the error if needed
+        }
     };
 
     useEffect(() => {
-        initializeNotify(notify)
-    }, [])
+        if (currencyIndex < store.currencies.length && !fetchInProgress) {
+            const fetchData = async () => {
+                setFetchInProgress(true);
+                await handleCreateCurrencyRates(store.currencies[currencyIndex].code);
+                setCurrencyIndex(prevIndex => prevIndex + 1);
+                setFetchInProgress(false);
+            };
+
+            fetchData().catch(console.error);
+        }
+    }, [currencyIndex, fetchInProgress, store.currencies]);
 
     useEffect(() => {
-        if (currencyData.currencyCode && currencyData.symbols.length > 0) {
-            createCurrencyRates(currencyData.symbols);
-        }
-    }, [currencyData]);
-
-    // TODO: Add a button that updates all exchange rates,
-    // TODO: if timestamp is older than 12 hours, mark it as red!
+        initializeNotify(notify);
+    }, []);
 
     return (
         <Container>
@@ -43,7 +67,7 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
                             <Button
                                 size="small"
                                 variant="secondary"
-                                onClick={() => store.currencies.map((c: Currency) => handleCreateCurrencyRates(c.code))}
+                                onClick={() => setCurrencyIndex(0)}
                             >
                                 Update all Exchange Rates
                             </Button>
@@ -56,42 +80,46 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
                     {store && store.currencies.map((currency: Currency) => (
                         <ProgressAccordion.Item key={currency.code} value={currency.name}>
                             <ProgressAccordion.Header>
-                                <div className="w-full flex justify-between items-center">
-                                    <div className="flex items-center gap-x-2">
-                                        <Button
-                                            size="small"
-                                            variant="secondary"
-                                            onClick={() => handleCreateCurrencyRates(currency.code)}
-                                        >
-                                            Update
-                                        </Button>
-                                        <span>{currency.name}</span>
-                                    </div>
-                                    {currency.rates_timestamp && (
-                                        <Badge size="xsmall">
-                                            {new Date(currency.rates_timestamp).toLocaleString()}
-                                        </Badge>
-                                    )}
+                                <div className="flex items-center gap-x-2">
+                                    <Button
+                                        size="small"
+                                        variant={currency.exchange_rates.some((er) => (new Date(er.timestamp).getTime() + (12 * 60 * 60 * 1000)) < Date.now()) ? "danger" : "secondary"}
+                                        onClick={() => handleCreateCurrencyRates(currency.code)}
+                                    >
+                                        Update
+                                    </Button>
+                                    <span>{currency.name}</span>
                                 </div>
                             </ProgressAccordion.Header>
                             <ProgressAccordion.Content className="flex flex-col gap-y-2 pb-2">
                                 <Table>
                                     <Table.Header>
                                         <Table.Row>
+                                            <Table.HeaderCell>Date</Table.HeaderCell>
                                             <Table.HeaderCell>Code</Table.HeaderCell>
                                             <Table.HeaderCell>Exchange Rate</Table.HeaderCell>
                                         </Table.Row>
                                     </Table.Header>
                                     <Table.Body>
-                                        {currency.rates && Object.entries(currency.rates).map(([key, value]) => (
+                                        {currency.exchange_rates.map((er) => (
                                             <Table.Row>
-                                                <Table.Cell><Badge size="xsmall">{key}</Badge></Table.Cell>
-                                                <Table.Cell><span>{value}</span></Table.Cell>
+                                                <Table.Cell>
+                                                    <Badge size="xsmall">
+                                                        {new Date(er.timestamp).toLocaleString()}
+                                                    </Badge>
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    <Badge size="xsmall">
+                                                        {er.secondary_currency.code}
+                                                    </Badge>
+                                                </Table.Cell>
+                                                <Table.Cell>
+                                                    {er.exchange_rate}
+                                                </Table.Cell>
                                             </Table.Row>
                                         ))}
                                     </Table.Body>
                                 </Table>
-
                             </ProgressAccordion.Content>
                         </ProgressAccordion.Item>
                     ))}

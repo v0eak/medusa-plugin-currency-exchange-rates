@@ -2,7 +2,6 @@ import { Lifetime } from "awilix"
 import { Store as MedusaStore, StoreService as MedusaStoreService } from '@medusajs/medusa';
 import { MedusaError } from "medusa-core-utils";
 import { EntityManager } from "typeorm";
-import { UpdateCurrencyInput } from "../types/currency";
 
 class StoreService extends MedusaStoreService {
     static LIFE_TIME = Lifetime.SCOPED

@@ -35,6 +35,7 @@
     "react": "^18.2.0"
   },
   "dependencies": {
+    "@medusajs/medusa": "^1.20.6",
     "@medusajs/ui": "^3.0.0",
     "@tanstack/react-query": "4.22.0",
     "axios": "^0.21.4",
@@ -46,6 +47,8 @@
     "typeorm": "^0.3.16"
   },
   "devDependencies": {
+    "@medusajs/admin": "^7.1.14",
+    "@medusajs/medusa": "^1.20.6",
     "cross-env": "^7.0.3",
     "eslint": "^6.8.0",
     "jest": "^27.3.1",
