@@ -50,7 +50,7 @@ class CurrencyExchangeRateService extends TransactionBaseService {
 
             // Fetch Rates
     
-            const response = await axios.get<apiResponseType>(`http://api.exchangeratesapi.io/v1/latest`, {
+            const response = await axios.get<apiResponseType>(`https://api.exchangeratesapi.io/v1/latest`, {
                 params: {
                     access_key: this.apiKey,
                     base: code,
