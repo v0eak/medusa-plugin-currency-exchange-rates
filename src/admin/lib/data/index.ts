@@ -6,15 +6,15 @@ export const initializeNotify = (notifyFunction) => {
   notify = notifyFunction;
 };
 
-export const useCreateCurrencyRates = (currencyCode: string) => {
+export const useCreateCurrencyRates = () => {
     const { mutate: mutateCurrencyRates } = useAdminCustomPost(
-        `/currency-exchange-rate/${currencyCode}`,
+        `/currency-exchange-rate`,
         ["base_currency", "secondary_currency"]
     )
     
-    const createCurrencyRates = async (symbols: string[]) => {
+    const createCurrencyRates = async (currency_code: string, symbols: string[]) => {
         return mutateCurrencyRates(
-            { symbols },
+            { currency_code, symbols },
             {
                 onSuccess: (data: any) => {
                     // Handle successful responses
