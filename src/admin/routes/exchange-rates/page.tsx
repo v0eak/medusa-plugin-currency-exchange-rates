@@ -69,7 +69,7 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
                                     <Button
                                         size="small"
                                         variant={(currency.exchange_rates && currency.exchange_rates?.some((er) => (new Date(er.timestamp).getTime() + (12 * 60 * 60 * 1000)) < Date.now())
-                                            || currency.exchange_rates.length < store.currencies.length - 1) ? "danger" : "secondary"}
+                                            || currency.exchange_rates && currency.exchange_rates.length < store.currencies.length - 1) ? "danger" : "secondary"}
                                         onClick={() => {createCurrencyRates(currency.code, createSymbols(currency.code, store.currencies)), refetch()}}
                                     >
                                         Update
@@ -100,7 +100,7 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
                                                 </Table.Cell>
                                             </Table.Row>
                                         ))}
-                                        {currency.exchange_rates.map((er) => (
+                                        {currency.exchange_rates && currency.exchange_rates.map((er) => (
                                             <Table.Row>
                                                 <Table.Cell className={`${(new Date(er.timestamp).getTime() + (12 * 60 * 60 * 1000)) < Date.now() && 'bg-rose-300'}`}>
                                                     {new Date(er.timestamp).toLocaleString()}
