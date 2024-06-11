@@ -34,7 +34,7 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
     const findMissingExchangeRates = (currency: MedusaCurrency, storeCurrencies: MedusaCurrency[]) => {
         const allCurrencyCodes = storeCurrencies.map(c => c.code);
         const existingExchangeRates = currency.exchange_rates?.map(er => er.secondary_currency.code);
-        const missingExchangeRates = allCurrencyCodes.filter(code => code !== currency.code && !existingExchangeRates.includes(code));
+        const missingExchangeRates = allCurrencyCodes.filter(code => code !== currency.code && !existingExchangeRates?.includes(code));
         return missingExchangeRates;
     };
 
