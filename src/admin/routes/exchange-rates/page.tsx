@@ -68,8 +68,7 @@ const ExchangeRatepage = ({notify}: RouteProps) => {
                                 <div className="flex items-center gap-x-2">
                                     <Button
                                         size="small"
-                                        variant={(currency.exchange_rates.some((er) => (new Date(er.timestamp).getTime() + (12 * 60 * 60 * 1000)) < Date.now())
-                                            || !currency.exchange_rates
+                                        variant={(currency.exchange_rates && currency.exchange_rates?.some((er) => (new Date(er.timestamp).getTime() + (12 * 60 * 60 * 1000)) < Date.now())
                                             || currency.exchange_rates.length < store.currencies.length - 1) ? "danger" : "secondary"}
                                         onClick={() => {createCurrencyRates(currency.code, createSymbols(currency.code, store.currencies)), refetch()}}
                                     >
