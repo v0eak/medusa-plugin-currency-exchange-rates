@@ -19,7 +19,7 @@ export const useCreateCurrencyRates = () => {
                 onSuccess: (data: any) => {
                     // Handle successful responses
                     notify.success("Success", "Successfully created Curreny Exchange Rates!")
-                    return data.feature_displays
+                    return data.currency
                 },
                 onError: (error) => {
                     // Handle non-successful responses (e.g., 404, 500, etc.)
